@@ -4,16 +4,20 @@
   "description": "opendoor's interview question",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^1.0.2",
     "body-parser": "^1.17.2",
+    "chai": "^4.1.0",
+    "chai-http": "^3.0.0",
     "csv-parse": "^1.2.1",
     "express": "^4.15.3",
     "fs": "0.0.1-security",
-    "geojson": "^0.4.1"
+    "geojson": "^0.4.1",
+    "mocha": "^3.5.0"
   }
 }

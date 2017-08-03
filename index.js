@@ -16,7 +16,10 @@ app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 app.get('/', function (req, res) {
-  res.send('Hello World!')
+  res.json({
+    success: true
+  })
+  // res.send('Hello World!')
 })
 
 //====================== Part I GeoJSON Listings ========================
@@ -106,3 +109,6 @@ app.post('/refresh_key', function(req, res){
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!')
 })
+
+
+module.exports = app;
