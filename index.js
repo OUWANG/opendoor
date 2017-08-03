@@ -1,13 +1,26 @@
 const express = require('express')
 const app = express()
 const fs = require('fs')
-var parse = require('csv-parse')
-var GeoJSON = require('geojson');
+const parse = require('csv-parse')
+const GeoJSON = require('geojson');
+const bodyParser = require('body-parser');
 var data = [];
+var userDB = [];
+//============================== Hashing ================================
+
+var bcrypt = require('bcrypt');
+const saltRounds = 10;
+var someOtherPlaintextPassword = 'MomoGogo';
+
+app.use(bodyParser.json()); // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 app.get('/', function (req, res) {
   res.send('Hello World!')
 })
+
+//====================== Part I GeoJSON Listings ========================
+
 app.get('/listings/', function (req, res) {
   var min_price = req.query.min_price;
   var max_price = req.query.max_price;
@@ -43,6 +56,51 @@ app.get('/listings/', function (req, res) {
       res.send(data);
     })
   })
+})
+
+//================ Part II Token-Based Authentication ==================
+app.post('/register', function(req, res){
+  var user_id = req.body.id;
+  for (var i = 0; i < userDB.length; i++) {
+    if (userDB[i].id === user_id) {
+      res.send('userID already exists')
+      break;
+    }
+  }
+  var password = req.body.password;
+  var token;
+  bcrypt.genSalt(saltRounds, function(err, salt) {
+      bcrypt.hash(password, salt, function(err, hash) {
+          // Store hash in your password DB.
+          token = hash;
+          userDB.push({id: user_id, password: password, token: token})
+          console.log(userDB);
+          res.send(user_id + ' ' + password + ' ' + token);
+      });
+  });
+})
+
+app.post('/retrieve_key', function(req, res){
+  var user_id = req.body.id;
+  var password = req.body.password;
+  for (var i = 0; i < userDB.length; i++) {
+    if(userDB[i].id === user_id && userDB[i].password === password) {
+      res.send(userDB[i].token);
+    }
+  }
+})
+
+app.post('/refresh_key', function(req, res){
+  var token = req.body.token;
+  var newToken;
+  bcrypt.genSalt(saltRounds, function(err, salt) {
+      bcrypt.hash(token, salt, function(err, hash) {
+          // Store hash in your password DB.
+          newToken = hash;
+          console.log('newToken: ',newToken);
+          res.send(newToken);
+      });
+  });
 })
 
 app.listen(3000, function () {
